@@ -78,7 +78,6 @@ def read_interest(file='interests.txt'):
                 line = line.removesuffix('\n')
                 if len(line) > 0:
                     interest[irk].append(line)
-
     return interest
 
 
@@ -91,17 +90,19 @@ def save_interest(interest, file='interests.txt'):
             for item in interest[irk]:
                 f.write(f'{item}\n')
             f.write('\n')
-    return 'Done!'
+    # print(f"'{file}' was saved.")
+    return None
 
 
-def init_interest(file='interests.txt'):
-    if os.path.exists(file):
-        raise IOError(f"'{file}' is already exist. Use add_interest() or remove_interest().")
+def init_interest(file='interests.txt', overwrite=False):
+    if os.path.exists(file) and not overwrite:
+        raise ValueError(f"'{file}' is already exist. Use add_interest() or remove_interest().")
     rkey = ['subject', 'author', 'keyword']
     with open(file, 'w') as f:
         for irk in rkey:
             f.write(f'=====  Interested {irk.capitalize()}s  =====\n\n')
-    return 'Done!'
+    print(f"'{file}' was initialized.")
+    return None
 
 
 def add_interest(file='interests.txt', **kwargs):
@@ -110,24 +111,32 @@ def add_interest(file='interests.txt', **kwargs):
     interest = read_interest(file)
     update = False
     for key in kwargs:
-        if key in ['subject', 'author', 'keyword']:
-            items = kwargs[key]
-            if items is None:
-                continue
-            if type(items) is str:
-                items = [items]
-            for item in items:
+        if key not in ['subject', 'author', 'keyword']:
+            raise KeyError(f"'{key}' is unknown key in the interest.")
+
+        items = kwargs[key]
+        if items is None:
+            continue
+        if type(items) is str:
+            items = [items]
+        for item in items:
+            exist = False
+            if key == 'author':
+                for name in interest['author']:
+                    if who.match(item, name):
+                        exist = True
+            else:
                 if item in interest[key]:
-                    print(f"'{item}' is already exist in the '{key}' list.")
-                else:
-                    interest[key].append(item)
-                    update = True
-                    print(f"'{item}' is added to the '{key}' list.")
-        else:
-            return KeyError(f"'{key}' is unknown key in the interest.")
+                    exist = True
+            if exist:
+                print(f"'{item}' is already exist in the '{key}' list.")
+            else:
+                interest[key].append(item)
+                update = True
+                print(f"'{item}' is added to the '{key}' list.")
     if update:
         save_interest(interest)
-        print('Done!')
+        print(f"'{file}' was updated.")
     else:
         print('Nothing changed!')
     return None
@@ -156,7 +165,7 @@ def remove_interest(file='interests.txt', **kwargs):
             return KeyError(f"'{key}' is unknown key in the interest.")
     if update:
         save_interest(interest)
-        print('Done!')
+        print(f"'{file}' was updated.")
     else:
         print('Nothing changed!')
     return None
@@ -236,7 +245,7 @@ def get_interested_submissions(file='interests.txt', cut=[1, 1, 1, 1], prefix='a
     with open('{}.html'.format(report_name), 'w') as f:
         f.write(isub_page)
         print("'{}.html' was saved.".format(report_name))
-    return
+    return None
 
 
 def run_apn(at='11:00', end='2023-12-31', **kwargs):
@@ -253,6 +262,7 @@ def run_apn(at='11:00', end='2023-12-31', **kwargs):
         wait = int((start-now).total_seconds())
     remain = int((end_date-now).total_seconds())
     while remain > 0:
+        print('Next searching: {}\nWaiting ...'.format(start.strftime('%Y-%m-%d %H:%M')))
         time.sleep(wait)
         get_interested_submissions(**kwargs)
         start += timedelta(days=1)
