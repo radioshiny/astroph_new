@@ -8,7 +8,7 @@ import markdown as md
 from datetime import datetime, date, timedelta
 
 
-def get_new_submissions(ops=False):
+def get_new():
     # get astro-ph new page contents
     file = 'https://arxiv.org/list/astro-ph/new'
     browser = webdriver.Chrome()
@@ -20,7 +20,7 @@ def get_new_submissions(ops=False):
         if soup == _temp:
             break
         _temp = soup
-    page_source = browser.page_source
+    # page_source = browser.page_source
     browser.quit()
     # print('Done!')
 
@@ -63,10 +63,55 @@ def get_new_submissions(ops=False):
     for i in range(nrep):
         newsub['abstract'].append('')
 
-    return (newsub, page_source) if ops else newsub
+    # return (newsub, page_source) if ops else newsub
+    return newsub
 
 
-def read_interest(file='interests.txt'):
+def _init_params():
+    with open('.params', 'w') as fp:
+        fp.write('file: .interests\n')
+        fp.write('shell_command: open -a "Google Chrome"\n')
+    return
+
+
+def get_params(key: str = None):
+    # init params
+    if not os.path.exists('.params'):
+        _init_params()
+
+    # read params
+    with open('.params', 'r') as fp:
+        params = {}
+        for line in fp.readlines():
+            pkey, pval = [i.replace('\n', '').strip() for i in line.split(':', 1)]
+            params[pkey] = pval
+
+    if key is None:
+        return params
+
+    if not key in params.keys():
+        raise KeyError(f"'{key}' is unknown parameter name.")
+
+    return params[key]
+
+
+def set_params(key: str, val: str):
+    # get params
+    params = get_params()
+
+    # set params
+    params[key] = val
+
+    with open('.params', 'w') as fp:
+        for key in params.keys():
+            fp.write(f'{key}: {params[key]}\n')
+    return
+
+
+def read_interest(file: str = None):
+    if file is None:
+        file = get_params('file')
+
     interest = {}
     with open(file, 'r') as f:
         irk = ''
@@ -81,7 +126,10 @@ def read_interest(file='interests.txt'):
     return interest
 
 
-def save_interest(interest, file='interests.txt'):
+def _save_interest(interest, file: str = None):
+    if file is None:
+        file = get_params('file')
+
     rkey = ['subject', 'author', 'keyword']
     with open(file, 'w') as f:
         for irk in rkey:
@@ -94,9 +142,17 @@ def save_interest(interest, file='interests.txt'):
     return None
 
 
-def init_interest(file='interests.txt', overwrite=False):
+def init_interest(file: str = None, default: bool = False, overwrite: bool = False):
+    if file is None:
+        file = get_params('file')
+
+    if default:
+        set_params('file', file)
+        print(f"The default file name was changed to '{file}'.")
+
     if os.path.exists(file) and not overwrite:
         raise ValueError(f"'{file}' is already exist. Use add_interest() or remove_interest().")
+
     rkey = ['subject', 'author', 'keyword']
     with open(file, 'w') as f:
         for irk in rkey:
@@ -105,11 +161,16 @@ def init_interest(file='interests.txt', overwrite=False):
     return None
 
 
-def add_interest(file='interests.txt', **kwargs):
+def add_interest(file: str = None, **kwargs):
     if len(kwargs) == 0:
         return
+    
+    if file is None:
+        file = get_params('file')
+    
     interest = read_interest(file)
     update = False
+
     for key in kwargs:
         if key not in ['subject', 'author', 'keyword']:
             raise KeyError(f"'{key}' is unknown key in the interest.")
@@ -117,8 +178,10 @@ def add_interest(file='interests.txt', **kwargs):
         items = kwargs[key]
         if items is None:
             continue
+
         if type(items) is str:
             items = [items]
+
         for item in items:
             exist = False
             if key == 'author':
@@ -135,16 +198,20 @@ def add_interest(file='interests.txt', **kwargs):
                 update = True
                 print(f"'{item}' is added to the '{key}' list.")
     if update:
-        save_interest(interest)
+        _save_interest(interest)
         print(f"'{file}' was updated.")
     else:
         print('Nothing changed!')
     return None
 
 
-def remove_interest(file='interests.txt', **kwargs):
+def remove_interest(file: str = None, **kwargs):
     if len(kwargs) == 0:
         return
+
+    if file is None:
+        file = get_params('file')
+
     interest = read_interest(file)
     update = False
     for key in kwargs:
@@ -164,14 +231,14 @@ def remove_interest(file='interests.txt', **kwargs):
         else:
             return KeyError(f"'{key}' is unknown key in the interest.")
     if update:
-        save_interest(interest)
+        _save_interest(interest)
         print(f"'{file}' was updated.")
     else:
         print('Nothing changed!')
     return None
 
 
-def get_find_result(scope, keys, kind=None, link=None):
+def _get_search_score(scope, keys, kind=None, link=None):
     score = []
     for i, sub in enumerate(scope):
         score.append(0)
@@ -191,7 +258,7 @@ def get_find_result(scope, keys, kind=None, link=None):
     return score
 
 
-def make_web_report(body):
+def _make_web_report(body):
     page_header = '<!DOCTYPE html>\n<html>\n' \
                   '<title>New Interested Submissions on Astrophysics in arXiv</title>\n' \
                   '<meta name="viewport" content="width=device-width, initial-scale=1">\n' \
@@ -201,9 +268,15 @@ def make_web_report(body):
     return page_header+body+page_footer
 
 
-def get_interested_submissions(file='interests.txt', cut=[1, 1, 1, 1], prefix='astro-ph', datetag=True, timetag=False):
+def search_new(file: str = None, cut: list = None):
+    if file is None:
+        file = get_params('file')
+
+    if cut is None:
+        cut = [1, 1, 1, 1]
+
     interest = read_interest(file)
-    newsub = get_new_submissions()
+    newsub = get_new()
 
     # get score based on interest
     score = np.zeros((4, len(newsub['class'])), dtype=int)
@@ -211,7 +284,7 @@ def get_interested_submissions(file='interests.txt', cut=[1, 1, 1, 1], prefix='a
     nkeys = ['subject', 'author', 'title', 'abstract']
     for i, (ikey, nkey) in enumerate(zip(ikeys, nkeys)):
         # print(i, ikey, nkey)
-        score[i] = get_find_result(newsub[nkey], interest[ikey], nkey, newsub['link'])
+        score[i] = _get_search_score(newsub[nkey], interest[ikey], nkey, newsub['link'])
 
     # get mask from score
     masks = [(score[i] >= cut[i]) for i in range(4)]
@@ -223,6 +296,17 @@ def get_interested_submissions(file='interests.txt', cut=[1, 1, 1, 1], prefix='a
 
     # print interested submissions
     idx = np.where(mask)[0].tolist()
+    return newsub, idx
+
+
+def make_report(prefix: str = 'astro-ph',
+                datetag: bool = True,
+                timetag: bool = False,
+                show: bool = True, **kwargs):
+    file = kwargs.pop('file') if 'file' in kwargs else None
+    cut = kwargs.pop('cut') if 'cut' in kwargs else None
+    newsub, idx = search_new(file=file, cut=cut)
+
     isub_html = '<div class="w3-panel">\n    <h2>New Interested Submissions on Astrophysics in arXiv</h2>\n'
     isub_html += '    <p>Update: {}</p>\n</div>\n'.format(datetime.now().strftime('%B %d, %Y (%H:%M)'))
 
@@ -235,16 +319,23 @@ def get_interested_submissions(file='interests.txt', cut=[1, 1, 1, 1], prefix='a
         isub += '{} \n\n'.format(newsub['abstract'][i])
         isub_html += '<div class="w3-panel w3-leftbar">\n{}\n</div>\n'.format(md.markdown(isub))
 
-    isub_page = make_web_report(isub_html)
+    isub_page = _make_web_report(isub_html)
 
     report_name = prefix
     if datetag:
         report_name += '_{}'.format(datetime.now().strftime('%Y%m%d'))
     if timetag:
         report_name += '_{}'.format(datetime.now().strftime('%H%M%S'))
-    with open('{}.html'.format(report_name), 'w') as f:
+    report_name += '.html'
+    with open(report_name, 'w') as f:
         f.write(isub_page)
-        print("'{}.html' was saved.".format(report_name))
+        print("'{}' was saved.".format(report_name))
+
+    if show:
+        _shell_command = get_params('shell_command')
+        _path = os.getcwd()
+        os.system(f'{_shell_command} {_path}/{report_name}')
+
     return None
 
 
@@ -256,7 +347,7 @@ def run_apn(at='11:00', end='2023-12-31', **kwargs):
     start = datetime(now.year, now.month, now.day, *at)
     wait = int((start-now).total_seconds())
     if int(wait) < 0:
-        get_interested_submissions(**kwargs)
+        make_report(**kwargs)
         start += timedelta(days=1)
         now = datetime.now()
         wait = int((start-now).total_seconds())
@@ -264,16 +355,9 @@ def run_apn(at='11:00', end='2023-12-31', **kwargs):
     while remain > 0:
         print('Next searching: {}\nWaiting ...'.format(start.strftime('%Y-%m-%d %H:%M')))
         time.sleep(wait)
-        get_interested_submissions(**kwargs)
+        make_report(**kwargs)
         start += timedelta(days=1)
         now = datetime.now()
         wait = int((start-now).total_seconds())
         remain = int((end_date-now).total_seconds())
     return
-
-
-if __name__ == '__main__':
-    if os.path.exists('../interests.txt'):
-        run_apn()
-    else:
-        raise FileNotFoundError("'interests.txt' is not found.")

@@ -20,7 +20,7 @@ Features
 - Managing user interests (subjects, author names, and keywords)
 - Searching for new submissions in
   `astro-ph <https://arxiv.org/list/astro-ph/new>`_ based on the user interests
-- Creating a summarized document for the interested submissions
+- Creating a summary report for the interested submissions
 
 Installation
 ============
