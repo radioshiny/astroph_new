@@ -7,6 +7,8 @@ astroph_new
 in `arXiv <https://arxiv.org>`_ based on the user interests and to create a
 summarized document that can be easily opened in a browser.
 
+- Docs: https://astroph-new.readthedocs.io
+
 Installation: ``pip install git+https://github.com/radioshiny/astroph_new``
 
 Features
