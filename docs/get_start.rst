@@ -295,5 +295,33 @@ Waiting ...
    The :func:`run_apn` is not a daemon that runs in the background,
    so it is terminated when you close the running Python shell or terminal.
 
+You can designate the time and end date for :func:`run_apn`.
+
+``at`` : string, ``'HH:MM'``
+    a daily search and report generation time. Default is ``'11:00'``.
+
+``end`` : string, ``'yyyy-mm-dd'``
+    the end date of :func:`run_apn`. If not given, it is automatically set
+    to 4 days later. For example, if you start :func:`run_apn` on Monday,
+    the end date will be set Friday.
+
+>>> apn.run_apn(at='12:30', end='2023-12-31')
+Next searching: 2023-03-16 12:30
+Waiting ...
+
+The :func:`run_apn` delivers input arguments to the :func:`make_report` and
+:func:`search_new`. So, you can set the ``file``, ``prefix``, ``datetag``,
+``timetag``, and ``show`` options for all daily executions.
+
+>>> apn.run_apn(at='11:00', end='2023-03-31',
+                file='keywords_ppdisk',
+                prefix='ppdisk', show=True)
+author 'Expert, P. Disk' is found in [#] (https://arxiv.org/abs/####.#####)
+keyword 'protoplanetary disk' is found in [#] (https://arxiv.org/abs/####.#####)
+keyword 'transitional disk' is found in [#] (https://arxiv.org/abs/####.#####)
+'ppdisk_20230315.html' was saved.
+Next searching: 2023-03-16 11:00
+Waiting ...
+
 .. contents::
 
