@@ -313,8 +313,7 @@ The :func:`run_apn` delivers input arguments to the :func:`make_report` and
 :func:`search_new`. So, you can set the ``file``, ``prefix``, ``datetag``,
 ``timetag``, and ``show`` options for all daily executions.
 
->>> apn.run_apn(at='11:00', end='2023-03-31',
-                file='keywords_ppdisk',
+>>> apn.run_apn(at='11:00', end='2023-03-31', file='keywords_ppdisk',\
                 prefix='ppdisk', show=True)
 author 'Expert, P. Disk' is found in [#] (https://arxiv.org/abs/####.#####)
 keyword 'protoplanetary disk' is found in [#] (https://arxiv.org/abs/####.#####)
