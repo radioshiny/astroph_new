@@ -9,7 +9,7 @@
 project = 'astroph_new'
 copyright = '2023, Shinyoung Kim'
 author = 'Shinyoung Kim'
-version = '0.1.3'
+version = '0.1.4'
 release = version
 
 # -- General configuration ---------------------------------------------------
