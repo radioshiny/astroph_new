@@ -6,16 +6,24 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+from astroph_new import __version__ as _version
+
 project = 'astroph_new'
 copyright = '2023, Shinyoung Kim'
 author = 'Shinyoung Kim'
-release = '0.1.2'
-version = release
+version = _version
+release = _version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = [
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.viewcode',
+    'sphinx_rtd_theme',
+]
 
 templates_path = ['_templates']
 source_suffix = '.rst'
@@ -30,3 +38,7 @@ import sphinx_rtd_theme
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
+html_theme_options = {
+    'navigation_depth': 5,
+}
+

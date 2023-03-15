@@ -181,6 +181,119 @@ To remove no longer used keywords of interest:
 Searching based on interests
 ============================
 
+.. important::
 
+   In this :mod:`astroph_new` module,  downloading new submissions from
+   `astro-ph`_, searching based on user interests, and making a summary
+   report of the search results are performed in three steps by
+   :func:`get_new`, :func:`search_new`, and :func:`make_report`.
+   However, since each step automatically calls the previous step function,
+   you can skip this section and only need to run :func:`make_report`.
 
+The :func:`get_new` function opens `new <https://arxiv.org/list/astro-ph/new>`_
+page of `astro-ph`_ in the virtual web browser using the :mod:`selenium` module
+and downloads the page source. Abstracts in `astro-ph`_ are compiled with
+`mathjax <https://www.mathjax.org/>`_, which takes some running time.
+So, :func:`get_new` will repeat the download with an interval of 5 seconds
+and check no changes to the page source. The :func:`get_new` returns the
+processed download result as a Python dictionary with key names
+``class``, ``link``, ``title``, ``author``, and ``abstract``.
+
+>>> newsub = apn.get_new()
+>>> newsub.keys()
+dict_keys(['class', 'link', 'title', 'author', 'subject', 'abstract'])
+
+The :func:`search_new` function searches interested new submissions
+based on the user interests, which is saved in the running folder with the
+given name by ``file``. The :func:`search_new` returns a python tuple
+that contains the output of :func:`get_new` and an index list of the
+interested submissions.
+
+>>> newsub, idx = apn.search_new()
+keyword 'molecular cloud' is found in the title of [10] (https://arxiv.org/abs/2303.07410)
+keyword 'starless' is found in the title of [19] (https://arxiv.org/abs/2303.07501)
+keyword 'molecular cloud' is found in the abstract of [10] (https://arxiv.org/abs/2303.07410)
+keyword 'starless' is found in the abstract of [19] (https://arxiv.org/abs/2303.07501)
+keyword 'molecular cloud' is found in the abstract of [36] (https://arxiv.org/abs/2303.07628)
+keyword 'starless' is found in the abstract of [36] (https://arxiv.org/abs/2303.07628)
+keyword 'molecular cloud' is found in the abstract of [41] (https://arxiv.org/abs/2303.07752)
+keyword 'filament' is found in the abstract of [60] (https://arxiv.org/abs/2303.08088)
+
+>>> print(idx)
+[10, 19, 36, 41, 60]
+
+Making summary report
+=====================
+
+The :func:`make_report` function creates an ``HTML`` document, which is the
+summary report of the interested new submissions and can be quickly and
+conveniently opened in any browser, such as ``Google Chrome`` or ``Safari``.
+
+>>> apn.make_report()
+keyword 'molecular cloud' is found in the title of [10] (https://arxiv.org/abs/2303.07410)
+keyword 'starless' is found in the title of [19] (https://arxiv.org/abs/2303.07501)
+keyword 'molecular cloud' is found in the abstract of [10] (https://arxiv.org/abs/2303.07410)
+keyword 'starless' is found in the abstract of [19] (https://arxiv.org/abs/2303.07501)
+keyword 'molecular cloud' is found in the abstract of [36] (https://arxiv.org/abs/2303.07628)
+keyword 'starless' is found in the abstract of [36] (https://arxiv.org/abs/2303.07628)
+keyword 'molecular cloud' is found in the abstract of [41] (https://arxiv.org/abs/2303.07752)
+keyword 'filament' is found in the abstract of [60] (https://arxiv.org/abs/2303.08088)
+'astro-ph_20230315.html' was saved.
+
+The :func:`make_report` has the following options:
+
+``prefix`` : string
+    The prefix of the filename for saving the report HTML page.
+    Default is ``'astro-ph'``
+
+``datetag`` : bool
+    Add a date tag at the end of the saved file name to prevent overwriting
+    and preserve older reports. Default is ``True``.
+
+``timetag`` : bool
+    Add a time tag at the end of the saved file name. Default is ``False``.
+
+``show`` : bool
+    After the report is created, it is automatically displayed in the browser.
+    Default is ``False``.
+
+If you set the ``show`` option as ``True``, the :func:`make_report`
+automatically displays the report page in the browser. For this feature,
+you should set the ``'show'`` parameter, which is a shell command for opening
+an HTML file in a browser, using :func:`set_params`. For example, if you use
+``Google Chrome`` on the ``mac``, it is ``'open -a "Google Chrome"'``
+(default).
+
+>>> apn.set_params('show', 'open -a "Google Chrome"')
+>>> apn.get_params('show')
+'open -a "Google Chrome"'
+>>> apn.make_report(show=True)
+
+Scheduling for astroph_new
+==========================
+
+The :func:`run_apn` function executes :func:`make_report` at user-designated
+time until the given end date. If the user-designated time has already passed
+at the time starting :func:`run_apn`, :func:`make_report` will be executed
+immediately, and from the next date, it will be executed at that time.
+
+>>> apn.run_apn()
+keyword 'molecular cloud' is found in the title of [10] (https://arxiv.org/abs/2303.07410)
+keyword 'starless' is found in the title of [19] (https://arxiv.org/abs/2303.07501)
+keyword 'molecular cloud' is found in the abstract of [10] (https://arxiv.org/abs/2303.07410)
+keyword 'starless' is found in the abstract of [19] (https://arxiv.org/abs/2303.07501)
+keyword 'molecular cloud' is found in the abstract of [36] (https://arxiv.org/abs/2303.07628)
+keyword 'starless' is found in the abstract of [36] (https://arxiv.org/abs/2303.07628)
+keyword 'molecular cloud' is found in the abstract of [41] (https://arxiv.org/abs/2303.07752)
+keyword 'filament' is found in the abstract of [60] (https://arxiv.org/abs/2303.08088)
+'astro-ph_20230315.html' was saved.
+Next searching: 2023-03-16 11:00
+Waiting ...
+
+.. warning::
+
+   The :func:`run_apn` is not a daemon that runs in the background,
+   so it is terminated when you close the running Python shell or terminal.
+
+.. contents::
 

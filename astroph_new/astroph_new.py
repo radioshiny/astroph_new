@@ -70,7 +70,7 @@ def get_new():
 def _init_params():
     with open('.params', 'w') as fp:
         fp.write('file: .interests\n')
-        fp.write('shell_command: open -a "Google Chrome"\n')
+        fp.write('show: open -a "Google Chrome"\n')
     return
 
 
@@ -249,11 +249,11 @@ def _get_search_score(scope, keys, kind=None, link=None):
             elif kind == 'author':
                 for s in sub:
                     if who.match(k, s):
-                        print(f"author '{s}' is found in {link[i]}")
+                        print(f"author '{s}' is found in the {kind} of [{i}] ({link[i]})")
                         score[i] += 1
             else:
                 if f' {k}'.upper() in sub.upper():
-                    print(f"keyword '{k}' is found in {link[i]}")
+                    print(f"keyword '{k}' is found in the {kind} of [{i}] ({link[i]})")
                     score[i] += 1
     return score
 
@@ -302,7 +302,7 @@ def search_new(file: str = None, cut: list = None):
 def make_report(prefix: str = 'astro-ph',
                 datetag: bool = True,
                 timetag: bool = False,
-                show: bool = True, **kwargs):
+                show: bool = False, **kwargs):
     file = kwargs.pop('file') if 'file' in kwargs else None
     cut = kwargs.pop('cut') if 'cut' in kwargs else None
     newsub, idx = search_new(file=file, cut=cut)
@@ -332,14 +332,21 @@ def make_report(prefix: str = 'astro-ph',
         print("'{}' was saved.".format(report_name))
 
     if show:
-        _shell_command = get_params('shell_command')
+        _shell_command = get_params('show')
         _path = os.getcwd()
         os.system(f'{_shell_command} {_path}/{report_name}')
 
     return None
 
 
-def run_apn(at='11:00', end='2023-12-31', **kwargs):
+def run_apn(at: str = None, end: str = '2023-12-31', **kwargs):
+    if at is None:
+        at = '11:00'
+
+    if end is None:
+        today = date.today()
+        end = today+timedelta(days=4)
+
     at = [int(i) for i in at.split(':')]
     end = [int(i) for i in end.split('-')]
     end_date = datetime(*end, 23, 59, 59)

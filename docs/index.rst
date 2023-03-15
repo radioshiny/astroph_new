@@ -49,9 +49,10 @@ Documentation
 =============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
+   :glob:
 
-   get_start
+   get_start*
 
 ..
     Indices and tables
