@@ -339,7 +339,7 @@ def make_report(prefix: str = 'astro-ph',
     return None
 
 
-def run_apn(at: str = None, end: str = '2023-12-31', **kwargs):
+def run_apn(at: str = None, end: str = None, **kwargs):
     if at is None:
         at = '11:00'
 
