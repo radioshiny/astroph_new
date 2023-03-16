@@ -303,6 +303,31 @@ def make_report(prefix: str = 'astro-ph',
                 datetag: bool = True,
                 timetag: bool = False,
                 show: bool = False, **kwargs):
+    """
+    Main function to make a summary report in HTML format from search results
+
+    Parameters
+    ----------
+    prefix: str
+        Prefix of the HTML file name for saving the summary report.
+        Default is 'astro-ph'.
+
+    datetag: bool
+        If True, add a date tag to the end of the file name.
+        Default is True.
+
+    timetag:
+        If True, add a time tag to the end of the file name.
+        Default is False.
+
+    show:
+        If True, the report will be automatically opened in browser.
+        Default is False.
+
+    Returns
+    -------
+    None
+    """
     file = kwargs.pop('file') if 'file' in kwargs else None
     cut = kwargs.pop('cut') if 'cut' in kwargs else None
     newsub, idx = search_new(file=file, cut=cut)
@@ -368,3 +393,4 @@ def run_apn(at: str = None, end: str = None, **kwargs):
         wait = int((start-now).total_seconds())
         remain = int((end_date-now).total_seconds())
     return
+

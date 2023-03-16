@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setup(
     name="astroph_new", # Replace with your own username
-    version="0.1.9",
+    version="0.2.0",
     author="Shinyoung Kim",
     author_email="radioshiny@gmail.com",
     description="python module to make summary of astro-ph based on user interests",
