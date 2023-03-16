@@ -5,10 +5,10 @@ with open("README.rst", "r") as fh:
 
 setup(
     name="astroph_new", # Replace with your own username
-    version="0.1.5",
+    version="0.1.7",
     author="Shinyoung Kim",
     author_email="radioshiny@gmail.com",
-    description="python functions to search and report new submissions in astro-ph based on user interests",
+    description="python module to make summary of astro-ph based on user interests",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/radioshiny/astroph_new",
@@ -18,4 +18,6 @@ setup(
         "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License"
     ],
-    python_requires='>=3.7', install_requires=['bs4', 'markdown', 'numpy', 'selenium', 'whoswho'])
+    python_requires='>=3.7',
+    install_requires=['bs4', 'markdown', 'numpy', 'selenium', 'whoswho']
+)
