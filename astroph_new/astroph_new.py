@@ -6,9 +6,20 @@ import time
 import os
 import markdown as md
 from datetime import datetime, date, timedelta
+import pickle
 
 
-def get_new():
+def get_new(refresh: int = 30):
+    # check duplicate
+    recent = os.getcwd()+'/.newsub'
+    if os.path.exists(recent):
+        with open(recent, 'rb') as file:
+            savtime, newsub = pickle.load(file)
+        now = datetime.now()
+        if int((now-savtime).total_seconds()) < refresh*60:
+            print('There is a result which has got within refresh time.')
+            return newsub
+
     # get astro-ph new page contents
     file = 'https://arxiv.org/list/astro-ph/new'
     browser = webdriver.Chrome()
@@ -63,7 +74,11 @@ def get_new():
     for i in range(nrep):
         newsub['abstract'].append('')
 
-    # return (newsub, page_source) if ops else newsub
+    # Save temp data to prevent duplicates.
+    savtime = datetime.now()
+    with open(recent, 'wb') as file:
+        pickle.dump((savtime, newsub), file)
+
     return newsub
 
 

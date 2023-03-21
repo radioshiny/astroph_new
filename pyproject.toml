@@ -1,7 +1,7 @@
 [project]
 name = "astroph_new"
 description = "python module to make summary of astro-ph based on user interests"
-version = "0.2.1"
+version = "0.2.2"
 authors = [{ name = "Shinyoung Kim", email = "radioshiny@gmail.com" }]
 readme = "README.rst"
 requires-python = ">=3.7"

@@ -188,7 +188,7 @@ Searching based on interests
    report of the search results are performed in three steps by
    :func:`get_new`, :func:`search_new`, and :func:`make_report`.
    However, since each step automatically calls the previous step function,
-   you can skip this section and only need to run :func:`make_report`.
+   **you can skip this section and only need to run** :func:`make_report`.
 
 The :func:`get_new` function opens `new <https://arxiv.org/list/astro-ph/new>`_
 page of `astro-ph`_ in the virtual web browser using the :mod:`selenium` module
