@@ -31,7 +31,7 @@ install ``astroph_new`` with ``pip`` simply run:
 
 .. code-block:: bash
 
-   pip install astroph-new
+   pip install -U astroph-new
 
 Checking installation
 ---------------------

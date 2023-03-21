@@ -9,7 +9,7 @@ summarized document that can be easily opened in any browser.
 
 - Docs: https://astroph-new.readthedocs.io
 
-Installation: ``pip install astroph-new``
+Installation: ``pip install -U astroph-new``
 
 Features
 ========

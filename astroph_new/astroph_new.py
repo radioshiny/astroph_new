@@ -371,9 +371,14 @@ def run_apn(at: str = None, end: str = None, **kwargs):
     if end is None:
         today = date.today()
         end = today+timedelta(days=4)
+        end = [end.year, end.month, end.day]
+    else:
+        if isinstance(end, str) and len(end) == 10:
+            end = [int(i) for i in end.split('-')]
+        else:
+            raise ValueError("'end' should be given in 'yyyy-mm-dd' format.")
 
     at = [int(i) for i in at.split(':')]
-    end = [int(i) for i in end.split('-')]
     end_date = datetime(*end, 23, 59, 59)
     now = datetime.now()
     start = datetime(now.year, now.month, now.day, *at)
