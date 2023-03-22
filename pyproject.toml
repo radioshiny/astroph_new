@@ -1,7 +1,7 @@
 [project]
 name = "astroph_new"
 description = "python module to make summary of astro-ph based on user interests"
-version = "0.2.2"
+version = "0.2.3"
 authors = [{ name = "Shinyoung Kim", email = "radioshiny@gmail.com" }]
 readme = "README.rst"
 requires-python = ">=3.7"
@@ -11,7 +11,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License"
 ]
 dependencies = [
-    "bs4", "markdown", "numpy", "selenium", "whoswho"
+    "bs4", "numpy", "selenium", "whoswho"
 ]
 
 [project.urls]

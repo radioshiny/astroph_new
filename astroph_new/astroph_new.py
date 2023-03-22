@@ -4,7 +4,6 @@ from whoswho import who
 import numpy as np
 import time
 import os
-import markdown as md
 from datetime import datetime, date, timedelta
 import pickle
 
@@ -68,7 +67,7 @@ def get_new(refresh: int = 30):
 
     # get abstract
     abstract_tags = soup.find_all('p', {'class': 'mathjax'})
-    newsub['abstract'] = [i.text.replace('\n', ' ').replace('  ', ' ') for i in abstract_tags]
+    newsub['abstract'] = [i.text.replace('\n', ' ').replace('  ', ' ').replace("`", "'") for i in abstract_tags]
 
     nrep = len(newsub['class']) - len(newsub['abstract'])
     for i in range(nrep):
@@ -283,7 +282,7 @@ def _make_web_report(body):
     return page_header+body+page_footer
 
 
-def search_new(file: str = None, cut: list = None):
+def search_new(file: str = None, cut: list = None, **kwargs):
     if file is None:
         file = get_params('file')
 
@@ -291,7 +290,9 @@ def search_new(file: str = None, cut: list = None):
         cut = [1, 1, 1, 1]
 
     interest = read_interest(file)
-    newsub = get_new()
+
+    refresh = kwargs.pop('refresh') if 'refresh' in kwargs else 30
+    newsub = get_new(refresh=refresh)
 
     # get score based on interest
     score = np.zeros((4, len(newsub['class'])), dtype=int)
@@ -345,7 +346,8 @@ def make_report(prefix: str = 'astro-ph',
     """
     file = kwargs.pop('file') if 'file' in kwargs else None
     cut = kwargs.pop('cut') if 'cut' in kwargs else None
-    newsub, idx = search_new(file=file, cut=cut)
+    refresh = kwargs.pop('refresh') if 'refresh' in kwargs else 30
+    newsub, idx = search_new(file=file, cut=cut, refresh=refresh)
 
     isub_html = '<div class="w3-panel">\n    <h2>New Interested Submissions on Astrophysics in arXiv</h2>\n'
     isub_html += '    <p>Update: {}</p>\n</div>\n'.format(datetime.now().strftime('%B %d, %Y (%H:%M)'))
@@ -353,11 +355,12 @@ def make_report(prefix: str = 'astro-ph',
     for i in idx:
         isub = ''
         sid = newsub['link'][i][-10:]
-        isub += '### {} \n'.format(newsub['title'][i])
-        isub += '<span class="w3-text-blue">[arXiv:{}]({}) [[pdf](https://arxiv.org/pdf/{})]</span> {} \n\n'.format(sid, newsub['link'][i], sid, newsub['class'][i])
-        isub += '**{}** \n\n'.format(', '.join(newsub['author'][i]))
-        isub += '{} \n\n'.format(newsub['abstract'][i])
-        isub_html += '<div class="w3-panel w3-leftbar">\n{}\n</div>\n'.format(md.markdown(isub))
+        isub += '<h3>{}</h3>\n'.format(newsub['title'][i])
+        isub += '<p><span class="w3-text-pink"><a href="{}">arXiv:{}</a> '.format(newsub['link'][i], sid)
+        isub += '[<a href="https://arxiv.org/pdf/{}">pdf</a>]</span> {} </p>\n'.format(sid, newsub['class'][i])
+        isub += '<p><strong>{}</strong></p>\n'.format(', '.join(newsub['author'][i]))
+        isub += '<p>{}</p>\n'.format(newsub['abstract'][i])
+        isub_html += '<div class="w3-panel w3-leftbar w3-border-gray w3-hover-border-pink">\n{}\n</div>\n'.format(isub)
 
     isub_page = _make_web_report(isub_html)
 

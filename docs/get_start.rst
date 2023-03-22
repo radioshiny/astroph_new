@@ -149,7 +149,7 @@ Obvious duplicates cannot be added:
 'Myers, P. C.' is already exist in the 'author' list.
 Nothing changed!
 
-Keyword searches for titles and abstracts ignore case,
+Keyword searches for titles and abstracts ignore cases,
 but are sensitive to spaces and hyphens:
 
 >>> apn.add_interest(keyword=['starless', 'protostellar'])
@@ -202,6 +202,15 @@ processed download result as a Python dictionary with key names
 >>> newsub = apn.get_new()
 >>> newsub.keys()
 dict_keys(['class', 'link', 'title', 'author', 'subject', 'abstract'])
+
+You can set an input argument ``refresh`` for :func:`get_new` to avoid getting
+duplicate data.
+
+``refresh`` : int
+    If new submission data received from astro-ph was stored within the
+    refresh time (minutes), it returns the saved data without receiving
+    the data again. If you want to receive the data again, set ``refresh=0``.
+    Default is ``30`` (minutes).
 
 The :func:`search_new` function searches interested new submissions
 based on the user interests, which is saved in the running folder with the
@@ -305,13 +314,28 @@ You can designate the time and end date for :func:`run_apn`.
     to 4 days later. For example, if you start :func:`run_apn` on Monday,
     the end date will be set Friday.
 
+You can also set ``end`` as the end date of the year, like ``2023-12-31``.
+However, these schedules can be terminated prematurely for many reasons,
+such as the Python kernel shutting down, closing a terminal window,
+or the system rebooting for an update.
+
 >>> apn.run_apn(at='12:30', end='2023-12-31')
 Next searching: 2023-03-16 12:30
 Waiting ...
 
+As mentioned in the description of the ``end`` argument, if you run
+:func:`run_apn` on Monday without specifying ``end``, you can get a summary
+report at the given time every day until Friday. Additionally,
+if you're trying to have a daily habit of checking `astro-ph`_,
+the ``show=True`` option is strongly recommended.
+
+>>> apn.run_apn(at='11:00', show=True)
+Next searching: 2023-03-22 11:00
+Waiting ...
+
 The :func:`run_apn` delivers input arguments to the :func:`make_report` and
-:func:`search_new`. So, you can set the ``file``, ``prefix``, ``datetag``,
-``timetag``, and ``show`` options for all daily executions.
+:func:`search_new`. So, you can set the ``refresh``, ``file``, ``prefix``,
+``datetag``, ``timetag``, and ``show`` options for all daily executions.
 
 >>> apn.run_apn(file='keywords_ppdisk', prefix='ppdisk', show=True)
 author 'Expert, P. Disk' is found in [#] (https://arxiv.org/abs/####.#####)
