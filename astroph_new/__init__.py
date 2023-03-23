@@ -12,7 +12,7 @@ that can be easily opened in any browser.
 All files are under MIT License, see LICENSE
 """
 
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 
 from . import astroph_new
 from .astroph_new import *

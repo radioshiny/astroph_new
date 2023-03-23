@@ -131,10 +131,10 @@ def read_interest(file: str = None):
         irk = ''
         for line in f.readlines():
             if line.startswith('=====  Interested '):
-                irk = line.removeprefix('=====  Interested ').split()[0][:-1].lower()
+                irk = line.replace('=====  Interested ', '').split()[0][:-1].lower()
                 interest[irk] = []
             else:
-                line = line.removesuffix('\n')
+                line = line.rstrip()
                 if len(line) > 0:
                     interest[irk].append(line)
     return interest
